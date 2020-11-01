@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>My Nike</title>
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bulma@0.8.0/css/bulma.min.css"/>
+    <!-- Bootstrap CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+          integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+            integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+            crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+            integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+            crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.3.1/js/all.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@300&display=swap" rel="stylesheet">
+</head>
+<style>
+    * {
+        font-family: 'Noto Sans KR', sans-serif;
+    }
+
+    .carousel-item img {
+        top: 0;
+        left: 0;
+        height: 600px;
+        width: 100%;
+    }
+
+    .container {
+        margin: 30px auto 0 auto;
+    }
+
+    .card {
+        border: none;
+        box-shadow: none;
+    }
+
+    #search-form {
+        display: none;
+    }
+
+    #up {
+        position: fixed;
+        right: 0;
+        bottom: 0;
+    }
+</style>
+<script>
+    $(function () {
+        showCart();
+    })
+
+    function showCart() {
+        $('#card-box').empty();
+        $.ajax({
+            type: 'GET',
+            url: '/api/cart',
+            data: {},
+            success: function (response) {
+                if (response['result'] === 'success') {
+                    let products = response['cart'];
+
+                    for (let i = 0; i < products.length; i++) {
+                        let name = products[i]['name'];
+                        let img = products[i]['img'];
+                        let price = products[i]['price'];
+                        let url = products[i]['url'];
+
+                        makeCard(name, img, price, url);
+                    }
+                }
+            }
+        })
+    }
+
+    function makeCard(name, img, price, url) {
+        let temp_html =
+            `<div class="card">
+                <img class="card-img-top"
+                    src="${img}"
+                    alt="Card image cap">
+                <div class="card-body">
+                    <h5 class="card-title">${name}</h5>
+                    <p class="card-text">${price}</p>
+                  <a href="${url}" target="_blank"><button type="button" class="btn btn-light">구매</button></a>
+                  <button type="button" class="btn btn-light" onclick="deleteCart('${name}')">삭제</button>
+                </div>
+            </div>`;
+        $('#card-box').append(temp_html);
+    }
+
+    function deleteCart(name) {
+        $.ajax({
+            type: 'POST',
+            url: '/api/cart/del',
+            data: {'name_give': name},
+            success: function (response) {
+                if (response['result'] === 'success') {
+                    alert(response['msg']);
+                    window.location.reload();
+                }
+            }
+        })
+
+    }
+
+
+</script>
+<body>
+<nav class="navbar navbar-expand-lg navbar-light bg-white">
+    <a class="navbar-brand" href="{{ url_for('home')}}"><img width="100px"
+                                                             src="https://blog.kakaocdn.net/dn/o2k2o/btqwR37aRMc/imACexBUQZJms7mQRkQck1/img.jpg"/></a>
+    <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+        <ul class="navbar-nav mr-auto">
+            <li class="nav-item active">
+                <a class="nav-link" href="{{ url_for('home')}}">홈 <span class="sr-only">(current)</span></a>
+            </li>
+        </ul>
+        <ul class="navbar-nav" id="nav-right">
+            <li class="nav-item">
+                <a class="nav-link" href="{{ url_for('cart')}}">장바구니</a>
+            </li>
+        </ul>
+        <form class="form-inline my-2 my-lg-0" id="search-form">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"
+                   id="search-input">
+            <button class="btn btn-outline-dark my-2 my-sm-0" type="submit">Search</button>
+        </form>
+    </div>
+</nav>
+
+
+<div class="container">
+    <div class="card-columns" id="card-box">
+        <div class="card">
+            <img class="card-img-top"
+                 src="https://www.eurail.com/content/dam/images/eurail/Italy%20OCP%20Promo%20Block.adaptive.767.1535627244182.jpg"
+                 alt="Card image cap">
+            <div class="card-body">
+                <h5 class="card-title">이름</h5>
+                <p class="card-text">가격</p>
+                <button type="button" class="btn btn-light">구매</button>
+                <button type="button" class="btn btn-light">장바구니</button>
+            </div>
+
+        </div>
+    </div>
+
+
+</div>
+<a href="#" id="up">
+    <button type="button" class="btn btn-outline-dark">맨위로</button>
+</a>
+</body>
+</html>
