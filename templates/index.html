@@ -185,18 +185,42 @@
         })
     }
 
-
     function goSearch() {
         target = $('#search-input').val();
-        $('.container').empty();
+        if (target === "") {
+            alert('검색어를 입력해주세요.')
+            return;
+        }
         $.ajax({
             type: 'POST',
-            url: '/api/search',
+            url: `/api/search`,
             data: {'name_give': target},
             success: function (response) {
                 if (response['result'] === 'success') {
+                    showSearch();
+                }
+            }
+        })
+    }
+
+    function showSearch() {
+        $('.container').empty();
+        $.ajax({
+            type: 'GET',
+            url: '/api/search',
+            data: {},
+            success: function (response) {
+                if (response['result'] === 'success') {
                     let products = response['target'];
-                    let temp_search = `<h2><a id="Search">Search</a></h2>
+
+                    if (products.length === 0) {
+                        let temp_search = `<h2><a id="Search">검색 결과 : ${products.length}개</a></h2>
+                                <h3>검색 결과가 없습니다.</h3>`;
+                        $('.container').append(temp_search);
+                        return;
+                    }
+
+                    let temp_search = `<h2><a id="Search">검색 결과 : ${products.length}개</a></h2>
                                 <div class="card-columns Search">`;
                     $('.container').append(temp_search);
 
@@ -221,8 +245,8 @@
 </script>
 <body>
 <nav class="navbar navbar-expand-lg navbar-light bg-white">
-    <a class="navbar-brand" href="{{ url_for('home')}}"><img width="100px"
-                                                             src="https://blog.kakaocdn.net/dn/o2k2o/btqwR37aRMc/imACexBUQZJms7mQRkQck1/img.jpg"/></a>
+    <a class="navbar-brand" href="{{ url_for('home') }}"><img width="100px"
+                                                              src="https://blog.kakaocdn.net/dn/o2k2o/btqwR37aRMc/imACexBUQZJms7mQRkQck1/img.jpg"/></a>
     <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
             aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
@@ -231,7 +255,7 @@
     <div class="collapse navbar-collapse" id="navbarSupportedContent">
         <ul class="navbar-nav mr-auto">
             <li class="nav-item active">
-                <a class="nav-link" href="{{ url_for('home')}}">홈 <span class="sr-only">(current)</span></a>
+                <a class="nav-link" href="{{ url_for('home') }}">홈 <span class="sr-only">(current)</span></a>
             </li>
             <li class="nav-item">
                 <a class="nav-link" href="#Shoes">신발</a>
@@ -254,17 +278,17 @@
         </ul>
         <ul class="navbar-nav" id="nav-right">
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('search')}}">검색</a>
+                <a class="nav-link" onclick="searchClick()">검색</a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" href="{{ url_for('cart')}}">장바구니</a>
+                <a class="nav-link" href="{{ url_for('cart') }}">장바구니</a>
             </li>
         </ul>
-        <form class="form-inline my-2 my-lg-0" id="search-form">
+        <div class="form-inline my-2 my-lg-0" id="search-form">
             <input class="form-control mr-sm-2" type="search" placeholder="Search" aria-label="Search"
                    id="search-input">
             <button class="btn btn-outline-dark my-2 my-sm-0" type="submit" onclick="goSearch()">검색</button>
-        </form>
+        </div>
     </div>
 </nav>
 

@@ -18,11 +18,6 @@ def cart():
     return render_template('cart.html', title='cart')
 
 
-@app.route('/search')
-def search():
-    return render_template('search.html', title='search')
-
-
 @app.route('/api/home', methods=['GET'])
 def showHome():
     shoes = list(db.shoes.find({}, {'_id': 0}))
@@ -58,7 +53,7 @@ def delCart():
 
 @app.route('/api/search', methods=['POST'])
 def goSearch():
-    db.search.drop();
+    db.search.drop()
     name = request.form['name_give']
     temp = list(db.all.find({}, {'_id': 0}))
 
@@ -75,4 +70,4 @@ def showSearch():
 
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0')
+    app.run()
