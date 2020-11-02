@@ -40,7 +40,15 @@
     .card {
         border: none;
         box-shadow: none;
+        max-height: 510px;
+        overflow: auto;
     }
+
+    /*스크롤바 안보이게 하기*/
+    .card::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, Opera*/
+}
+
 
     #search-form {
         display: none;
